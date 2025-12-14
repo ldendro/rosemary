@@ -1,0 +1,32 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Fetch daily stock data with yfinance",
+  "steps": [
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "This script downloads daily AAPL price data from Yahoo Finance and saves it into a CSV and Parquet under data/raw and data/curated. It is the first building block of the Rosemary data pipeline.",
+      "line": 1
+    },
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "These variables define which stock we fetch (AAPL) and the date range. To try different stocks later, change ticker or turn this into a list",
+      "line": 20
+    },
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "These lines ensure the data directories exist before writing files. Raw CSV\nfiles go to data/raw, curated Parquet files go to data/curated.\n",
+      "line": 25
+    },
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "This call to yfinance downloads historical daily OHLCV data for the chosen\nticker and date range from Yahoo Finance.\n",
+      "line": 28
+    },
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "The CSV is for manual inspection. The Parquet file is the machine-friendly\nformat the rest of the pipeline will read for feature engineering and modeling.\n",
+      "line": 37
+    }
+  ],
+  "ref": "ROS-2-data-ingest"
+}
