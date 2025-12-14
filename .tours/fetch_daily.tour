@@ -1,0 +1,41 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "fetch_daily",
+  "steps": [
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "This script is the first step of the Rosemary data pipeline. It downloads\ndaily OHLCV data for a small list of tickers (AAPL, MSFT, SPY), saves one\nCSV per ticker under data/raw, and writes a combined Parquet file under\ndata/curated/daily.parquet for downstream feature engineering.\n",
+      "line": 14
+    },
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "This section defines the universe of tickers and the date range to ingest.\nTo change which symbols Rosemary pulls, edit this list or later load it\nfrom a config file. The end_date uses today's date so the script fetches\nup-to-date history on each run.\n",
+      "line": 27
+    },
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "These lines ensure the output folders exist before writing any files.\n- data/raw/: per-ticker CSVs for manual inspection and debugging\n- data/curated/: combined, cleaned tables (Parquet) used by the rest\n  of the pipeline for feature engineering and modeling.\n",
+      "line": 32
+    },
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "For each ticker in the list, we call yfinance to download historical daily\nOHLCV data. If yfinance returns an empty DataFrame (e.g., bad symbol),\nwe log a warning and skip that ticker. Each non-empty result is normalized\nand added to all_frames for later combination.\n",
+      "line": 39
+    },
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "Yahoo Finance can return a MultiIndex for the columns, e.g.\n('Adj Close', 'AAPL'). This block flattens them by taking only the first\nlevel (e.g. 'Adj Close') and lowercasing everything. This gives us a\nconsistent schema: [date, open, high, low, close, adj close, volume].\nThe symbol itself is tracked separately in the 'symbol' column.\n",
+      "line": 50
+    },
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "After ingesting all tickers, we stack their rows into a single DataFrame\ncalled combined. We then run simple sanity checks:\n- ensure the 'date' column exists\n- check for missing dates\n- check for duplicate (symbol, date) rows\nThis is an early guardrail before the data enters the rest of the system.\n",
+      "line": 81
+    },
+    {
+      "file": "scripts/fetch_daily.py",
+      "description": "Finally, we save the combined dataset to data/curated/daily.parquet.\nThis file is the main \"daily price table\" that the feature engineering\nscript will consume next. Logging the path and row count makes it easy\nto debug runs and verify data volume over time.\n",
+      "line": 88
+    }
+  ]
+}
