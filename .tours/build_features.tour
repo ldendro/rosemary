@@ -1,0 +1,31 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "build_features",
+  "steps": [
+    {
+      "file": "scripts/build_features.py",
+      "description": "This script builds foundational features for the Rosemary ML pipeline. It reads\ndaily.parquet (output of ingest), computes daily log returns, 10-day rolling\nvolatility, and next-day returns (target), and writes features_daily.parquet.\n",
+      "line": 19
+    },
+    {
+      "file": "scripts/build_features.py",
+      "description": "Loads the combined daily price table. Validates expected columns so that\nupstream changes in the ingest layer do not silently break the feature layer.\nSorting by symbol/date ensures correct rolling window behavior.\n",
+      "line": 40
+    },
+    {
+      "file": "scripts/build_features.py",
+      "description": "Computes the three foundational features:\n\n- ret_1d: daily log return\n- rvol_10: 10-day rolling volatility (annualized)\n- y_ret_1d: next-day log return (model target)\n\nThis is the first version of the Rosemary feature pipeline.\n",
+      "line": 53
+    },
+    {
+      "file": "scripts/build_features.py",
+      "description": "Feature computation creates NaNs at the start and end of each symbol's series.\nWe drop these to create a clean training dataset for downstream modeling.\n",
+      "line": 55
+    },
+    {
+      "file": "scripts/build_features.py",
+      "description": "Writes features_daily.parquet, the main input to the modeling pipeline.\nFuture versions may introduce feature versioning or schema metadata.\n",
+      "line": 58
+    }
+  ]
+}
