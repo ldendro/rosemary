@@ -1,0 +1,41 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "train_baseline_model",
+  "steps": [
+    {
+      "file": "scripts/train_baseline_model.py",
+      "description": "Path to the feature table produced by the feature engineering pipeline. This script expects `features_daily.parquet` to contain the feature columns listed below plus the target column `y_ret_1d`.",
+      "line": 32
+    },
+    {
+      "file": "scripts/train_baseline_model.py",
+      "description": "Minimal feature set used for the baseline. These are intentionally small so the model is quick to run and mainly serves to validate that features contain useful signal rather than to be a production model.",
+      "line": 37
+    },
+    {
+      "file": "scripts/train_baseline_model.py",
+      "description": "Quick schema validation: fail early if the pipeline didn't produce the expected columns. This makes errors explicit for the developer/user.",
+      "line": 41
+    },
+    {
+      "file": "scripts/train_baseline_model.py",
+      "description": "Use a simple time-based split: first 80% of rows => training set, remaining 20% => test set. This is appropriate for time-series-ish data where random shuffling could leak future information into training.",
+      "line": 46
+    },
+    {
+      "file": "scripts/train_baseline_model.py",
+      "description": "Train a very simple linear regression as a baseline. The goal here is interpretability and a fast smoke test for feature usefulness.",
+      "line": 54
+    },
+    {
+      "file": "scripts/train_baseline_model.py",
+      "description": "Predict on the hold-out set and compute basic regression metrics.\n",
+      "line": 57
+    },
+    {
+      "file": "scripts/train_baseline_model.py",
+      "description": "At this point `df` should be a flat table with one row per symbol/date and the engineered features we want to use for modeling.",
+      "line": 34
+    }
+  ]
+}
