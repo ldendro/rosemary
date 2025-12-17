@@ -33,7 +33,7 @@ def main() -> None:
 
     df = pd.read_parquet(input_path)
 
-    FEATURES = ["ret_1d", "rvol_10"]
+    FEATURES = ["ret_1d", "ret_5d", "ret_10d", "ret_20d", "rvol_10"]
     TARGET = "y_ret_1d"
 
     missing = set(FEATURES + [TARGET]) - set(df.columns)

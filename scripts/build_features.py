@@ -39,8 +39,15 @@ def main() -> None:
     df = df.sort_values(["symbol", "date"]).reset_index(drop=True)
 
 
+    # Daily log return
     df["ret_1d"] = np.log(df["close"] / df.groupby("symbol")["close"].shift(1))
 
+    # Multi-day momentum features
+    df["ret_5d"] = np.log(df["close"] / df.groupby("symbol")["close"].shift(5))
+    df["ret_10d"] = np.log(df["close"] / df.groupby("symbol")["close"].shift(10))
+    df["ret_20d"] = np.log(df["close"] / df.groupby("symbol")["close"].shift(20))
+
+    # 10-day rolling volatility (annualized)
     df["rvol_10"] = (
         df.groupby("symbol")["ret_1d"]
         .rolling(window=10)
@@ -49,9 +56,13 @@ def main() -> None:
         * np.sqrt(252)
     )
 
+    # Next-day return (supervised target)
     df["y_ret_1d"] = df.groupby("symbol")["ret_1d"].shift(-1)
 
-    df = df.dropna(subset=["ret_1d", "rvol_10", "y_ret_1d"]).reset_index(drop=True)
+
+    df = df.dropna(
+        subset=["ret_1d", "ret_5d", "ret_10d", "ret_20d", "rvol_10", "y_ret_1d"]
+    ).reset_index(drop=True)
 
     output_path = "data/curated/features_daily.parquet"
     df.to_parquet(output_path, index=False)
