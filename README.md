@@ -23,6 +23,7 @@ Getting started:
     4. Install project dependencies
         - "pip install --upgrade pip"
         - "pip install -r requirements.txt"
+        - "pip install -e ."
     5. Set up the project folder structure if its your first time running Rosemary: 
         - "mkdir -p data/raw data/curated"
         - "mkdir -p scripts notebooks"
