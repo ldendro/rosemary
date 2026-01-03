@@ -48,6 +48,40 @@ def choose_state_v1(row: pd.Series) -> str:
 
     return CASH
 
+def choose_state_parametrized_v1(row: pd.Series, params: dict) -> str:
+    """
+    Same logic as choose_State_v1, but thresholds come from params.
+    
+    params keys:
+        - trend_mom60_min
+        - trend_mom20_min
+        - meanrev_mom20_max
+        - meanrev_dd60_max
+        - meanrev_vol20_max
+
+    Simply paramerterizes the thresholds used in choose_state_v1 (0.0, -0.01, -0.02, -0.03, 0.40)
+    """
+    mom_60 = row["mom_60"]
+    mom_20 = row["mom_20"]
+    vol_20 = row["vol_20"]
+    dd_60 = row["drawdown_60"]
+
+    if pd.isna(mom_60) or pd.isna(mom_20) or pd.isna(vol_20) or pd.isna(dd_60):
+        return CASH
+
+    if (mom_60 > params["trend_mom60_min"]) and (mom_20 > params["trend_mom20_min"]):
+        return TREND
+
+    if (
+        (mom_20 < params["meanrev_mom20_max"]) and
+        (dd_60 < params["meanrev_dd60_max"]) and
+        (vol_20 < params["meanrev_vol20_max"])
+    ):
+        return MEANREV
+
+    return CASH
+
+
 def build_meta_raw_returns(trend_out: pd.DataFrame, meanrev_out: pd.DataFrame, regime_df: pd.DataFrame) -> pd.DataFrame:
     """
     Produces:
@@ -68,5 +102,37 @@ def build_meta_raw_returns(trend_out: pd.DataFrame, meanrev_out: pd.DataFrame, r
     merged["meta_raw_ret"] = 0.0
     merged.loc[merged["state"] == TREND, "meta_raw_ret"] = merged.loc[merged["state"] == TREND, "trend_raw_ret"]
     merged.loc[merged["state"] == MEANREV, "meta_raw_ret"] = merged.loc[merged["state"] == MEANREV, "meanrev_raw_ret"]
+
+    return merged[["date", "state", "meta_raw_ret"]]
+
+def build_meta_raw_returns_param_v1(trend_out: pd.DataFrame, meanrev_out: pd.DataFrame, regime_df: pd.DataFrame, params: dict) -> pd.DataFrame:
+    """
+    Same as build_meta_raw_returns, but uses choose_state_parametrized_v1.
+    """
+    merged = (
+        regime_df[["date", "mom_20", "mom_60", "vol_20", "drawdown_60"]]
+        .merge(
+            trend_out[["date", "raw_ret"]].rename(columns={"raw_ret": "trend_raw_ret"}),
+            on="date",
+            how="inner",
+        )
+        .merge(
+            meanrev_out[["date", "raw_ret"]].rename(columns={"raw_ret": "meanrev_raw_ret"}),
+            on="date",
+            how="inner",
+        )
+        .sort_values("date")
+        .reset_index(drop=True)
+    )
+
+    merged["state"] = merged.apply(lambda r: choose_state_parametrized_v1(r, params), axis=1)
+
+    merged["meta_raw_ret"] = 0.0
+    merged.loc[merged["state"] == TREND, "meta_raw_ret"] = merged.loc[
+        merged["state"] == TREND, "trend_raw_ret"
+    ]
+    merged.loc[merged["state"] == MEANREV, "meta_raw_ret"] = merged.loc[
+        merged["state"] == MEANREV, "meanrev_raw_ret"
+    ]
 
     return merged[["date", "state", "meta_raw_ret"]]
