@@ -14,4 +14,4 @@ dev = ["pytest", "black"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["phase_1", "phase_2"]
+include = ["phase_1", "phase_2", "phase_3"]
