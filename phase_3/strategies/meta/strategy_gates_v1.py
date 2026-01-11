@@ -44,3 +44,20 @@ def build_strategy_gates_v1(regime_df: pd.DataFrame, p: dict = DEFAULT_GATE_PARA
         })
     
     return out
+
+def apply_strategy_gates(trend_out, meanrev_out, regime):
+    gates = build_strategy_gates_v1(regime, DEFAULT_GATE_PARAMS)
+
+    t = trend_out.merge(gates[["date", "trend_allowed"]], on="date", how="left")
+    m = meanrev_out.merge(gates[["date", "meanrev_allowed"]], on="date", how="left")
+
+    t["trend_allowed"] = t["trend_allowed"].fillna(False)
+    m["meanrev_allowed"] = m["meanrev_allowed"].fillna(False)
+
+    t.loc[~t["trend_allowed"], "raw_ret"] = 0.0
+    m.loc[~m["meanrev_allowed"], "raw_ret"] = 0.0
+
+    return (
+        t.drop(columns=["trend_allowed"]),
+        m.drop(columns=["meanrev_allowed"]),
+    )

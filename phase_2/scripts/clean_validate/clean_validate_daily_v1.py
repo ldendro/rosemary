@@ -1,8 +1,6 @@
 from pathlib import Path
+from phase_2.utils.paths import RAW_DIR, PROCESSED_DIR
 import pandas as pd
-
-RAW_DIR = Path("phase_2/data/raw")
-PROCESSED_DIR = Path("phase_2/data/processed")
 
 PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -10,7 +8,7 @@ REQUIRED_COLUMNS = ["date", "open", "high", "low", "close", "adj_close", "volume
 
 def clean_validate_daily(raw_path: Path, out_path: Path) -> None:
     """
-    Clean and validate one raw Tahoo daily dataset and save canonical processed output.
+    Clean and validate one raw Yahoo daily dataset and save canonical processed output.
     """
 
     df = pd.read_parquet(raw_path)

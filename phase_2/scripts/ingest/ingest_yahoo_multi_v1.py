@@ -1,8 +1,8 @@
 from pathlib import Path
+from phase_2.utils.paths import RAW_DIR
 import pandas as pd
 import yfinance as yf
 
-RAW_DIR = Path("phase_2/data/raw")
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 
 def _flatten_yfinance_columns(df: pd.DataFrame) -> pd.DataFrame:
