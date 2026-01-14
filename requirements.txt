@@ -4,3 +4,4 @@ yfinance
 pyarrow
 matplotlib
 scikit-learn
+cvxpy
